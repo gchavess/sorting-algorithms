@@ -1,4 +1,4 @@
-# Documentação para Execução do Script Python
+# Comparação de Algoritmos de Ordenação
 
 ## Requisitos
 
