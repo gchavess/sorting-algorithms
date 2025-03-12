@@ -30,7 +30,8 @@ execution_time_5000 = [data[algo]['execution_time'][data[algo]['dataset_sizes'].
 execution_time_10000 = [data[algo]['execution_time'][data[algo]['dataset_sizes'].index(10000)] for algo in algorithms]
 comparisons_5000 = [data[algo]['comparisons'][data[algo]['dataset_sizes'].index(5000)] for algo in algorithms]
 
-plt.figure(figsize=(12, 6))
+# Gráfico 1: Barras - Tempo de Execução (Dataset 10000)
+fig1 = plt.figure(figsize=(12, 6))
 plt.bar(algorithms, execution_time_10000, color='skyblue')
 plt.yscale('log')
 plt.title('Tempo de Execução por Algoritmo (Dataset 10000)')
@@ -38,10 +39,10 @@ plt.xlabel('Algoritmo')
 plt.ylabel('Tempo (segundos, escala log)')
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
-plt.show()
 
+# Gráfico 2: Linhas - Escalabilidade
 selected_algos = ['BubbleSort', 'QuickSort', 'MergeSort', 'RadixSort']
-plt.figure(figsize=(12, 6))
+fig2 = plt.figure(figsize=(12, 6))
 for algo in selected_algos:
     times = [data[algo]['execution_time'][data[algo]['dataset_sizes'].index(size)] for size in [1000, 5000, 10000]]
     plt.plot([1000, 5000, 10000], times, label=algo, marker='o')
@@ -52,9 +53,9 @@ plt.ylabel('Tempo (segundos, escala log)')
 plt.legend()
 plt.grid(True, which="both", ls="--")
 plt.tight_layout()
-plt.show()
 
-plt.figure(figsize=(12, 6))
+# Gráfico 3: Dispersão - Comparações vs. Tempo (Dataset 5000)
+fig3 = plt.figure(figsize=(12, 6))
 plt.scatter(comparisons_5000, execution_time_5000, color='purple')
 for i, algo in enumerate(algorithms):
     plt.annotate(algo, (comparisons_5000[i], execution_time_5000[i]), fontsize=8, xytext=(5, 5), textcoords='offset points')
@@ -65,4 +66,6 @@ plt.xlabel('Número de Comparações (escala log)')
 plt.ylabel('Tempo (segundos, escala log)')
 plt.grid(True, which="both", ls="--")
 plt.tight_layout()
+
+# Exibir todos os gráficos de uma vez
 plt.show()
