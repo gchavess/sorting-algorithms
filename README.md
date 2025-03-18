@@ -15,7 +15,7 @@ Para garantir que as dependências sejam instaladas corretamente sem interferir 
    ```sh
    cd caminho/para/o/projeto
    ```
-2. Crie um ambiente virtual (caso ainda não tenha feito isso):
+2. Crie um ambiente virtual:
    ```sh
    python -m venv venv
    ```
