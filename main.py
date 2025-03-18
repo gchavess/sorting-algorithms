@@ -5,13 +5,21 @@ from abc import ABC, abstractmethod
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor, ConsoleSpanExporter
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
 
-tracer_provider = TracerProvider()
-tracer_provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+resource = Resource(attributes={"service.name": "sorting-service"})
+
+tracer_provider = TracerProvider(resource=resource)
+tracer_provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter())) 
+otlp_exporter = OTLPSpanExporter(endpoint="localhost:4317", insecure=True)
+tracer_provider.add_span_processor(SimpleSpanProcessor(otlp_exporter))
 trace.set_tracer_provider(tracer_provider)
+
 tracer = trace.get_tracer(__name__)
 
 logging.basicConfig(filename='sorting_logs.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
+
 
 def save_to_file(filename, data):
     with open(filename, "w") as file:
@@ -334,18 +342,34 @@ class ShellSort(SortingStrategy):
         return data, comparisons, swaps
 
 def execute_sorting(algorithm, data):
-    with tracer.start_as_current_span(algorithm.__class__.__name__) as span:
-        start_time = time.time()
-        sorted_data, comparisons, swaps = algorithm.sort(data.copy())
-        execution_time = time.time() - start_time
-        log_message = (f'{algorithm.__class__.__name__} | Dataset Size: {len(data)} | '
-                       f'Execution Time: {execution_time:.6f} seconds | '
-                       f'Comparisons: {comparisons} | Swaps: {swaps}')
-        logging.info(log_message)
-        span.set_attribute("algorithm", algorithm.__class__.__name__)
-        span.set_attribute("dataset_size", len(data))
-        span.set_attribute("execution_time", execution_time)
-        return sorted_data
+    """Executa o algoritmo de ordenação e rastreia o desempenho."""
+    algorithm_name = algorithm.__class__.__name__
+
+    with tracer.start_as_current_span(f"Sorting-{algorithm_name}") as span:
+        try:
+            start_time = time.time()
+            sorted_data, comparisons, swaps = algorithm.sort(data.copy())
+            execution_time = time.time() - start_time
+
+            log_message = (
+                f"{algorithm_name} | Dataset Size: {len(data)} | "
+                f"Execution Time: {execution_time:.6f} seconds | "
+                f"Comparisons: {comparisons} | Swaps: {swaps}"
+            )
+            logging.info(log_message)
+
+            span.set_attribute("algorithm", algorithm_name)
+            span.set_attribute("dataset_size", len(data))
+            span.set_attribute("execution_time", execution_time)
+            span.set_attribute("comparisons", comparisons)
+            span.set_attribute("swaps", swaps)
+
+            return sorted_data
+
+        except Exception as e:
+            logging.error(f"Erro ao executar {algorithm_name}: {str(e)}")
+            span.set_attribute("error", str(e))
+            return None  
 
 if __name__ == "__main__":
     size = int(input("Digite a quantidade de dados a serem gerados: "))
