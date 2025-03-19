@@ -1,3 +1,6 @@
+## Alunos: MIchael Varaldo / Gustavo Chaves / Cristian Domingues
+
+
 # Comparação de Algoritmos de Ordenação
 
 ## Requisitos
