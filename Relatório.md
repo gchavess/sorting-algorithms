@@ -8,7 +8,14 @@ O código segue o padrão Strategy, permitindo a seleção dinâmica de algoritm
 
 O processo de geração de dados foi projetado para criar conjuntos de números aleatórios de forma parametrizável, possibilitando a produção de volumes variados conforme a necessidade dos experimentos. Essa flexibilidade permite a avaliação do desempenho dos algoritmos de ordenação em diferentes cenários. A geração dos números ocorre por meio de uma função que produz valores aleatórios dentro de um intervalo predefinido, garantindo diversidade nos dados. Os números gerados são então armazenados em um arquivo, que pode estar no formato de texto (.txt) ou binário, dependendo dos requisitos do experimento. No formato de texto, os números são organizados em um arquivo .txt, onde cada valor é separado por quebras de linha ou um delimitador específico. Esse formato facilita a inspeção manual dos dados e sua utilização em diferentes ferramentas de análise. Essa abordagem assegura a criação rápida e eficiente dos conjuntos de dados, permitindo a execução de testes consistentes e a comparação do desempenho dos algoritmos de ordenação em bases de diferentes tamanhos. 
 
- 
+# Ferramenta Utilizada e Análise dos Resultados
+Para a visualização e análise dos logs gerados durante a execução dos algoritmos de ordenação, foi utilizada a ferramenta open-source Jaeger. Essa ferramenta é amplamente empregada para rastreamento distribuído, permitindo monitorar o desempenho das operações e identificar gargalos no processamento. Com a utilização do Jaeger, foi possível coletar dados detalhados sobre o tempo de execução, número de comparações e trocas realizadas por cada algoritmo, facilitando a análise de eficiência.
+
+Os resultados obtidos confirmam a superioridade dos algoritmos baseados em Dividir e Conquistar, como QuickSort e MergeSort, que apresentaram tempos de execução significativamente menores em comparação aos métodos quadráticos, como BubbleSort e InsertionSort. O QuickSort foi consistentemente o mais eficiente, com tempo de execução variando de 0,002 segundos para um conjunto de 1000 elementos até 0,026 segundos para 10000 elementos. O RadixSort e o CountingSort, por serem algoritmos de complexidade O(n), também demonstraram alto desempenho, mas são aplicáveis apenas a números inteiros.
+
+Por outro lado, algoritmos quadráticos como BubbleSort e SelectionSort demonstraram tempos de execução excessivamente altos, tornando-os inviáveis para grandes conjuntos de dados. Com 10000 elementos, o BubbleSort levou mais de 12 segundos, enquanto o QuickSort finalizou em menos de 0,03 segundos, evidenciando a importância da escolha do algoritmo adequado conforme o tamanho do dataset.
+
+O uso do Jaeger foi essencial para a captura e visualização desses tempos de execução e contagens de operações, permitindo uma avaliação objetiva do desempenho dos algoritmos testados. 
 
 # Análise dos Resultados
 
