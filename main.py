@@ -2,29 +2,29 @@ import time
 import random
 import logging
 from abc import ABC, abstractmethod
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor, ConsoleSpanExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
 
+# Configuração inicial
 resource = Resource(attributes={"service.name": "sorting-service"})
-
 tracer_provider = TracerProvider(resource=resource)
-tracer_provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter())) 
+tracer_provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
 otlp_exporter = OTLPSpanExporter(endpoint="localhost:4317", insecure=True)
 tracer_provider.add_span_processor(SimpleSpanProcessor(otlp_exporter))
 trace.set_tracer_provider(tracer_provider)
-
 tracer = trace.get_tracer(__name__)
 
 logging.basicConfig(filename='sorting_logs.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
 
-
 def save_to_file(filename, data):
     with open(filename, "w") as file:
         file.write("\n".join(map(str, data)))
-        
+
 class SortingStrategy(ABC):
     @abstractmethod
     def sort(self, data):
@@ -42,35 +42,31 @@ class TimSort(SortingStrategy):
             key = data[i]
             j = i - 1
             while j >= left and data[j] > key:
-                self.comparisons += 1  
+                self.comparisons += 1
                 data[j + 1] = data[j]
                 j -= 1
-                self.swaps += 1 
+                self.swaps += 1
             data[j + 1] = key
 
     def merge(self, data, l, m, r):
         left = data[l:m + 1]
         right = data[m + 1:r + 1]
-
         i = j = 0
         k = l
-
         while i < len(left) and j < len(right):
-            self.comparisons += 1  
+            self.comparisons += 1
             if left[i] <= right[j]:
                 data[k] = left[i]
                 i += 1
             else:
                 data[k] = right[j]
                 j += 1
-                self.swaps += 1  
+                self.swaps += 1
             k += 1
-
         while i < len(left):
             data[k] = left[i]
             i += 1
             k += 1
-
         while j < len(right):
             data[k] = right[j]
             j += 1
@@ -79,10 +75,8 @@ class TimSort(SortingStrategy):
     def tim_sort(self, data):
         n = len(data)
         RUN = 32
-
         for i in range(0, n, RUN):
             self.insertion_sort(data, i, min(i + RUN - 1, n - 1))
-
         size = RUN
         while size < n:
             for left in range(0, n, 2 * size):
@@ -166,53 +160,6 @@ class QuickSort(SortingStrategy):
         sorted_data = quicksort_helper(data)
         return sorted_data, comparisons, swaps
 
-class RadixSort(SortingStrategy):
-    def sort(self, data):
-        if not data:
-            return []
-        
-        max_val = max(data)
-        exp = 1
-        while max_val // exp > 0:
-            self.counting_sort(data, exp)
-            exp *= 10
-        return data
-    
-    def counting_sort(self, data, exp):
-        n = len(data)
-        output = [0] * n
-        count = [0] * 10
-        
-        for i in range(n):
-            index = (data[i] // exp) % 10
-            count[index] += 1
-
-        for i in range(1, 10):
-            count[i] += count[i - 1]
-        
-        for i in range(n - 1, -1, -1):
-            index = (data[i] // exp) % 10
-            output[count[index] - 1] = data[i]
-            count[index] -= 1
-
-        for i in range(n):
-            data[i] = output[i]
-
-class ShellSort(SortingStrategy):
-    def sort(self, data):
-        n = len(data)
-        gap = n // 2
-        while gap > 0:
-            for i in range(gap, n):
-                temp = data[i]
-                j = i
-                while j >= gap and data[j - gap] > temp:
-                    data[j] = data[j - gap]
-                    j -= gap
-                data[j] = temp
-            gap //= 2
-        return data
-
 class MergeSort(SortingStrategy):
     def sort(self, data):
         comparisons, swaps = 0, 0
@@ -269,11 +216,11 @@ class HeapSort(SortingStrategy):
             heapify(data, i, 0)
         return data, comparisons, swaps
 
-
 class CountingSort(SortingStrategy):
     def sort(self, data):
         if not data:
             return [], 0, 0
+        comparisons, swaps = 0, 0
         max_val = max(data)
         min_val = min(data)
         range_of_elements = max_val - min_val + 1
@@ -290,23 +237,27 @@ class CountingSort(SortingStrategy):
             output_array[count_array[num - min_val] - 1] = num
             count_array[num - min_val] -= 1
 
-        return output_array, 0, 0
+        return output_array, comparisons, swaps
 
 class RadixSort(SortingStrategy):
     def sort(self, data):
         if not data:
             return [], 0, 0
+        comparisons, swaps = 0, 0
         max_val = max(data)
         exp = 1
         while max_val // exp > 0:
-            self.counting_sort(data, exp)
+            data, comp, swp = self.counting_sort(data, exp)
+            comparisons += comp
+            swaps += swp
             exp *= 10
-        return data, 0, 0
+        return data, comparisons, swaps
 
     def counting_sort(self, data, exp):
         n = len(data)
         output = [0] * n
         count = [0] * 10
+        comparisons, swaps = 0, 0
 
         for i in range(n):
             index = (data[i] // exp) % 10
@@ -322,6 +273,8 @@ class RadixSort(SortingStrategy):
 
         for i in range(n):
             data[i] = output[i]
+
+        return data, comparisons, swaps
 
 class ShellSort(SortingStrategy):
     def sort(self, data):
@@ -341,42 +294,137 @@ class ShellSort(SortingStrategy):
             gap //= 2
         return data, comparisons, swaps
 
-def execute_sorting(algorithm, data):
-    """Executa o algoritmo de ordenação e rastreia o desempenho."""
+def execute_sorting_sequential(algorithm, data, result_dict, lock):
     algorithm_name = algorithm.__class__.__name__
-
-    with tracer.start_as_current_span(f"Sorting-{algorithm_name}") as span:
+    with tracer.start_as_current_span(f"Sequential-Sorting-{algorithm_name}") as span:
         try:
             start_time = time.time()
             sorted_data, comparisons, swaps = algorithm.sort(data.copy())
             execution_time = time.time() - start_time
 
             log_message = (
-                f"{algorithm_name} | Dataset Size: {len(data)} | "
-                f"Execution Time: {execution_time:.6f} seconds | "
-                f"Comparisons: {comparisons} | Swaps: {swaps}"
+                f"Sequential {algorithm_name} | Size: {len(data)} | "
+                f"Time: {execution_time:.6f}s | Comp: {comparisons} | Swaps: {swaps}"
             )
             logging.info(log_message)
 
-            span.set_attribute("algorithm", algorithm_name)
-            span.set_attribute("dataset_size", len(data))
-            span.set_attribute("execution_time", execution_time)
-            span.set_attribute("comparisons", comparisons)
-            span.set_attribute("swaps", swaps)
+            span.set_attributes({
+                "algorithm": algorithm_name,
+                "mode": "sequential",
+                "dataset_size": len(data),
+                "execution_time": execution_time,
+                "comparisons": comparisons,
+                "swaps": swaps
+            })
 
-            return sorted_data
-
+            with lock:
+                result_dict[algorithm_name] = {
+                    'sequential': {
+                        'data': sorted_data,
+                        'time': execution_time,
+                        'comparisons': comparisons,
+                        'swaps': swaps
+                    }
+                }
         except Exception as e:
-            logging.error(f"Erro ao executar {algorithm_name}: {str(e)}")
+            logging.error(f"Erro em {algorithm_name} sequencial: {str(e)}")
             span.set_attribute("error", str(e))
-            return None  
+
+def execute_sorting_parallel(algorithm, data, result_dict, lock):
+    algorithm_name = algorithm.__class__.__name__
+    with tracer.start_as_current_span(f"Parallel-Sorting-{algorithm_name}") as span:
+        try:
+            start_time = time.time()
+            sorted_data, comparisons, swaps = algorithm.sort(data.copy())
+            execution_time = time.time() - start_time
+
+            log_message = (
+                f"Parallel {algorithm_name} | Size: {len(data)} | "
+                f"Time: {execution_time:.6f}s | Comp: {comparisons} | Swaps: {swaps}"
+            )
+            logging.info(log_message)
+
+            span.set_attributes({
+                "algorithm": algorithm_name,
+                "mode": "parallel",
+                "dataset_size": len(data),
+                "execution_time": execution_time,
+                "comparisons": comparisons,
+                "swaps": swaps
+            })
+
+            with lock:
+                result_dict[algorithm_name]['parallel'] = {
+                    'data': sorted_data,
+                    'time': execution_time,
+                    'comparisons': comparisons,
+                    'swaps': swaps
+                }
+        except Exception as e:
+            logging.error(f"Erro em {algorithm_name} paralelo: {str(e)}")
+            span.set_attribute("error", str(e))
+
+def compare_results(results):
+    for algo_name, result in results.items():
+        seq_time = result['sequential']['time']
+        par_time = result['parallel']['time']
+        speedup = seq_time / par_time if par_time > 0 else 0
+        consistency = result['sequential']['data'] == result['parallel']['data']
+        
+        logging.info(
+            f"Comparação {algo_name}: "
+            f"Speedup: {speedup:.2f}x | "
+            f"Consistência: {consistency}"
+        )
 
 if __name__ == "__main__":
     size = int(input("Digite a quantidade de dados a serem gerados: "))
     data = [random.randint(0, 100000) for _ in range(size)]
     save_to_file("unsorted_data.txt", data)
 
-    algorithms = [BubbleSort(), BubbleSortOptimized(), InsertionSort(), SelectionSort(), QuickSort(), MergeSort(), HeapSort(), TimSort(), CountingSort(), RadixSort(), ShellSort()]
+    algorithms = [
+        BubbleSort(),
+        BubbleSortOptimized(),
+        InsertionSort(),
+        SelectionSort(),
+        QuickSort(),
+        MergeSort(),
+        HeapSort(),
+        TimSort(),
+        CountingSort(),
+        RadixSort(),
+        ShellSort()
+    ]
     
+    results = {}
+    lock = threading.Lock()
+    
+    # Execução sequencial
+    sequential_threads = []
     for algo in algorithms:
-        execute_sorting(algo, data)
+        t = threading.Thread(
+            target=execute_sorting_sequential,
+            args=(algo, data, results, lock)
+        )
+        sequential_threads.append(t)
+        t.start()
+    
+    for t in sequential_threads:
+        t.join()
+
+    # Execução paralela
+    with ThreadPoolExecutor(max_workers=len(algorithms)) as executor:
+        futures = [
+            executor.submit(execute_sorting_parallel, algo, data, results, lock)
+            for algo in algorithms
+        ]
+        for future in futures:
+            future.result()
+
+    # Comparação dos resultados
+    compare_results(results)
+    
+    # Salvando resultados
+    for algo_name, result in results.items():
+        save_to_file(f"sorted_{algo_name}_sequential.txt", result['sequential']['data'])
+        save_to_file(f"sorted_{algo_name}_parallel.txt", result['parallel']['data'])

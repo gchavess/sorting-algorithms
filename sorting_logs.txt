@@ -31,3 +31,40 @@
 2025-03-11 20:35:06,068 - CountingSort | Dataset Size: 10000 | Execution Time: 0.015552 seconds | Comparisons: 0 | Swaps: 0
 2025-03-11 20:35:06,100 - RadixSort | Dataset Size: 10000 | Execution Time: 0.025883 seconds | Comparisons: 0 | Swaps: 0
 2025-03-11 20:35:06,177 - ShellSort | Dataset Size: 10000 | Execution Time: 0.070470 seconds | Comparisons: 149619 | Swaps: 149619
+2025-04-01 20:59:21,545 - Sequential BubbleSort | Size: 3 | Time: 0.000000s | Comp: 3 | Swaps: 0
+2025-04-01 20:59:21,545 - Sequential BubbleSortOptimized | Size: 3 | Time: 0.000000s | Comp: 2 | Swaps: 0
+2025-04-01 20:59:21,545 - Sequential InsertionSort | Size: 3 | Time: 0.000000s | Comp: 0 | Swaps: 0
+2025-04-01 20:59:21,551 - Sequential SelectionSort | Size: 3 | Time: 0.000000s | Comp: 3 | Swaps: 3
+2025-04-01 20:59:21,552 - Sequential QuickSort | Size: 3 | Time: 0.000000s | Comp: 2 | Swaps: 0
+2025-04-01 20:59:21,552 - Sequential MergeSort | Size: 3 | Time: 0.000000s | Comp: 2 | Swaps: 0
+2025-04-01 20:59:21,554 - Sequential HeapSort | Size: 3 | Time: 0.000000s | Comp: 3 | Swaps: 4
+2025-04-01 20:59:21,555 - Sequential TimSort | Size: 3 | Time: 0.000000s | Comp: 0 | Swaps: 0
+2025-04-01 20:59:21,569 - Sequential RadixSort | Size: 3 | Time: 0.000000s | Comp: 0 | Swaps: 0
+2025-04-01 20:59:21,570 - Sequential CountingSort | Size: 3 | Time: 0.014035s | Comp: 0 | Swaps: 0
+2025-04-01 20:59:21,570 - Sequential ShellSort | Size: 3 | Time: 0.000000s | Comp: 0 | Swaps: 0
+2025-04-01 20:59:23,892 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 20:59:24,955 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 2s.
+2025-04-01 20:59:26,999 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 4s.
+2025-04-01 20:59:31,039 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 8s.
+2025-04-01 20:59:39,075 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 16s.
+2025-04-01 20:59:55,128 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 32s.
+2025-04-01 21:00:27,174 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:00:28,222 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 2s.
+2025-04-01 21:00:30,272 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 4s.
+2025-04-01 21:00:34,318 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 8s.
+2025-04-01 21:00:42,385 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 16s.
+2025-04-01 21:00:58,448 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 32s.
+2025-04-01 21:01:30,518 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:01:31,573 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 2s.
+2025-04-01 21:01:33,621 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 4s.
+2025-04-01 21:01:37,688 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 8s.
+2025-04-01 21:01:45,732 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 16s.
+2025-04-01 21:02:01,785 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:02:02,830 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:02:03,874 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:02:04,918 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:02:05,967 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:02:07,009 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:02:08,061 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:02:09,112 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1s.
+2025-04-01 21:02:10,153 - Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 32s.
